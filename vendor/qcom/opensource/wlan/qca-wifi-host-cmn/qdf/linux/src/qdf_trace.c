@@ -26,6 +26,7 @@
 #include "qdf_str.h"
 #include <qdf_trace.h>
 #include <qdf_module.h>
+#include <soc/oplus/system/oplus_project.h>
 
 /* macro to map qdf trace levels into the bitmask */
 #define QDF_TRACE_LEVEL_TO_MODULE_BITMASK(_level) ((1 << (_level)))
@@ -3982,7 +3983,16 @@ qdf_export_symbol(qdf_get_pidx);
 #ifdef CONFIG_SLUB_DEBUG
 void __qdf_bug(void)
 {
+#ifndef OPLUS_BUG_STABILITY
+//modify for: close bug in user build
 	BUG();
+#else /* OPLUS_BUG_STABILITY */
+	if (AGING == get_eng_version()) {
+		BUG();
+	} else {
+		WARN_ON(1);
+	}
+#endif /* OPLUS_BUG_STABILITY */
 }
 qdf_export_symbol(__qdf_bug);
 #endif /* CONFIG_SLUB_DEBUG */
